@@ -1,0 +1,106 @@
+CREATE Database FODMS;
+
+
+-- Delete the schemas
+
+DROP TABLE IF EXISTS Payment;
+DROP TABLE IF EXISTS Orders;
+DROP TABLE IF EXISTS Restaurants;
+DROP TABLE IF EXISTS Customer;
+DROP TABLE IF EXISTS DeliveryPerson;
+
+
+SELECT *
+from DeliveryPerson
+
+
+-- Create the Customer schemas
+CREATE TABLE Customer
+(
+    Customer_ID CHAR(6),
+    Full_Name VARCHAR(20),
+    Email VARCHAR(40),
+    Password BINARY(64) ,
+    Phone CHAR(10),
+    Age NUMERIC(3),
+    Preference VARCHAR(20),
+    Customer_address xml,
+    Type VARCHAR(20),
+    CONSTRAINT Customer_PK PRIMARY KEY (Customer_ID)
+);
+
+-- Create the Restaurants schemas
+CREATE TABLE Restaurants
+(
+    Restaurant_ID CHAR(6),
+    Restaurant_name VARCHAR(20),
+    Eircode VARCHAR(10),
+    Street CHAR(20),
+    Address_line VARCHAR(40),
+    Area VARCHAR(10),
+    County VARCHAR(20),
+    City VARCHAR(20),
+    Tax_No VARCHAR(20),
+    Phone CHAR(10),
+    Rating NUMERIC(2, 1) DEFAULT 0,
+    Open_at VARCHAR(20),
+    Close_at VARCHAR(20),
+    CONSTRAINT Restaurant_Rating CHECK (Rating >= 0 and Rating <= 5),
+    CONSTRAINT Restaurant_PK PRIMARY KEY (Restaurant_ID)
+);
+
+-- Create the Orders schemas
+CREATE TABLE Orders
+(
+    Order_ID CHAR(10),
+    Customer_ID CHAR(6),
+    Restaurant_ID CHAR(6),
+    Total_Price NUMERIC(6, 0) DEFAULT 0,
+    Payment_Method VARCHAR(20),
+    Payment_Status VARCHAR(20),
+    Status VARCHAR(20),
+    Order_Date Date,
+    CONSTRAINT Orders_Total_Price CHECK (Total_Price >= 0),
+    CONSTRAINT Orders_PK PRIMARY KEY (Order_ID),
+    CONSTRAINT Orders_FK FOREIGN KEY (Restaurant_ID) REFERENCES Restaurants ( Restaurant_ID) ON DELETE CASCADE,
+    CONSTRAINT Customer_FK FOREIGN KEY (Customer_ID) REFERENCES Customer ( Customer_ID) ON DELETE CASCADE,
+);
+
+-- Create the Delivery Person schemas
+CREATE TABLE DeliveryPerson
+(
+    ID CHAR(6),
+    Full_name VARCHAR(20),
+    Email VARCHAR(40),
+    Password VARCHAR(20),
+    Phone CHAR(10),
+    Age CHAR(3),
+    Work_time CHAR(30),
+    Eircode VARCHAR(10),
+    Street CHAR(20),
+    Address_line VARCHAR(40),
+    County VARCHAR(20),
+    City VARCHAR(20),
+    Salary NUMERIC(6, 0) DEFAULT 0,
+    Travel_by VARCHAR(20),
+    Rating NUMERIC(2, 1) DEFAULT 0,
+    CONSTRAINT DeliveryPerson_Salary CHECK (Salary >= 0),
+    CONSTRAINT DeliveryPerson_Rating CHECK (Rating >= 0 and Rating <= 5),
+    CONSTRAINT DeliveryPerson_Age CHECK (Age >= 18 and Age <= 50),
+    CONSTRAINT DeliveryPerson_PK PRIMARY KEY (ID)
+);
+
+-- Create the Payment schemas
+CREATE TABLE Payment
+(
+    Payment_ID CHAR(6),
+    Amount NUMERIC(6, 0) DEFAULT 0,
+    Payment_Method VARCHAR(20),
+    Status VARCHAR(20),
+    Payment_date DATE,
+    Order_ID CHAR(10),
+    CONSTRAINT Payment_PK PRIMARY KEY (Payment_ID),
+    CONSTRAINT Payment_Amount CHECK (Amount >= 0),
+    CONSTRAINT Payment_FK FOREIGN KEY (Order_Id) REFERENCES orders (Order_Id) ON DELETE CASCADE
+
+);
